@@ -26,7 +26,8 @@ const fruit = new Fruit({
     price: 70
 });
 
-fruit.save();
+// uncomment fruit.save(); only when added the data
+// fruit.save();
 
 //insert many
 
@@ -57,5 +58,35 @@ Fruit.find(function(err, fruits){
     else{
         mongoose.connection.close();
         console.log(fruits);
+    }
+});
+
+//update
+Fruit.updateOne({_id: "5f977a11ffee5111bc02b641"}, {name: "Banana"}, function(err){
+    if(err){
+        console.log(err);
+    }
+    else{
+        console.log("Succesfully updated the document");
+    }
+});
+
+//delete
+Fruit.deleteOne({name: "Banana"}, function(err){
+    if(err){
+        console.log(err);
+    }
+    else{
+        console.log("succesfully deleted");
+    }
+});
+
+//deleteMany
+Fruit.deleteMany({name: "Kiwi"}, function(err){
+    if (err){
+        console.log(err);
+    }
+    else{
+        console.log("Deleted succesfully");
     }
 });
