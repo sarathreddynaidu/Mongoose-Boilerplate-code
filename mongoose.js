@@ -8,9 +8,10 @@ mongoose.connect("mongodb://localhost:27017/fruitsDB", {useNewUrlParser: true, u
 const fruitSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, "Please check your name"]
+        required: [true, "Please enter a fruit name"]
     },
-    price: {
+    price: Number,
+    rating: {
         type: Number,
         min: 1,
         max: 10
@@ -20,49 +21,107 @@ const fruitSchema = new mongoose.Schema({
 //model
 const Fruit = mongoose.model("Fruit", fruitSchema);
 
-//Create
+//create
 const fruit = new Fruit({
     name: "Apple",
-    price: 70
+    price: 80,
+    rating: 7
 });
 
-// uncomment fruit.save(); only when added the data
-// fruit.save();
+//save (save only once)
+fruit.save();
 
-//insert many
+//person schema
+const personSchema = new mongoose.Schema({
+    name: String,
+    age: Number,
+    favoriteFruit: fruitSchema //embedding fruit document into this property
+});
+
+//person model
+const Person = mongoose.model("Person", personSchema);
+
+const pear = new Fruit({
+    name: "Pear",
+    price: 60,
+    rating: 5
+});
+
+pear.save();
+
+const berry = new Fruit({
+    name: "Berry",
+    price: 50,
+    rating: 4
+});
+
+// berry.save();
+
+Person.updateOne({name: "Sarath"}, {favoriteFruit: berry}, function(err){
+    if(err){
+        console.log(err);
+    }
+    else{
+        console.log("Succesfully updated the document");
+    }
+});
+
+// create person
+const person = new Person({
+    name: "Prudhvi",
+    age: 20,
+    favoriteFruit: pear
+}); 
+
+// save person to DB
+person.save();
+
 
 const kiwi = new Fruit({
     name: "Kiwi",
-    price: 100
+    price: 100,
+    rating: 9
 });
 
 const orange = new Fruit({
     name: "Orange",
-    price: 90
+    price: 70,
+    rating: 10
 });
 
-Fruit.insertMany([kiwi, orange], function(err){
-    if (err){
+const banana = new Fruit({
+    name: "Banana",
+    price: 90,
+    rating: 6
+});
+
+// insert many
+// commit this out after inserting
+Fruit.insertMany([kiwi, orange, banana], function(err){
+    if(err){
         console.log(err);
     }
     else{
-        console.log("Successfully saved all the ")
+        console.log("Succesfully saved all the fruits to fruitsDB");
     }
 });
 
 //find
 Fruit.find(function(err, fruits){
-    if (err){
+    if(err){
         console.log(err);
     }
     else{
-        mongoose.connection.close();
-        console.log(fruits);
+        mongoose.connection.close(); //closes mongo connection
+        console.log("FRUITS LIST:");
+        fruits.forEach(function(fruit){
+            console.log(fruit.name);
+        });
     }
 });
 
-//update
-Fruit.updateOne({_id: "5f977a11ffee5111bc02b641"}, {name: "Banana"}, function(err){
+// update
+Fruit.updateOne({_id: "5f98a60d397f31162401248b"}, {name: "Mango"}, function(err){
     if(err){
         console.log(err);
     }
@@ -72,21 +131,22 @@ Fruit.updateOne({_id: "5f977a11ffee5111bc02b641"}, {name: "Banana"}, function(er
 });
 
 //delete
-Fruit.deleteOne({name: "Banana"}, function(err){
+Fruit.deleteOne({name: "Mango"}, function(err){
     if(err){
         console.log(err);
     }
     else{
-        console.log("succesfully deleted");
+        console.log("Succesfully deleted the document");
     }
 });
 
-//deleteMany
-Fruit.deleteMany({name: "Kiwi"}, function(err){
-    if (err){
+// delete many
+Person.deleteMany({name: "Sarath"}, function(err){
+    if(err){
         console.log(err);
     }
     else{
-        console.log("Deleted succesfully");
+        console.log("Succesfully deleted all the documents");
     }
 });
+
